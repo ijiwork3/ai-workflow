@@ -1,0 +1,978 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI로 일하는 IT 실무자의 다음 시대 — 도입부</title>
+<style>
+  :root {
+    --bg:       #f7f7f5;
+    --surface:  #ffffff;
+    --surface2: #f0f0ed;
+    --border:   #e2e2de;
+    --border2:  #d4d4cf;
+
+    --orange:    #c96500;
+    --orange-lt: #e07c00;
+    --amber:     #f59e0b;
+    --orange-bg: #fff8ee;
+    --orange-br: #fcd89a;
+
+    --ink:      #1e1d1b;
+    --ink-dim:  #4a4a47;
+    --ink-dimmer:#8a8a86;
+
+    --green:  #166534;
+    --red:    #b91c1c;
+    --blue:   #1d4ed8;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'Pretendard', 'Apple SD Gothic Neo', -apple-system, sans-serif;
+    background: #1a1a1a;
+    color: var(--ink);
+    overflow: hidden;
+    width: 100vw;
+    height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .deck {
+    position: relative;
+    aspect-ratio: 16 / 9;
+    overflow: hidden;
+    background: var(--bg);
+    flex-shrink: 0;
+  }
+
+  .slide {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    padding: 48px 80px;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.3s ease;
+    overflow: hidden;
+  }
+  .slide.active {
+    opacity: 1;
+    pointer-events: all;
+  }
+
+  /* 진행 바 */
+  .progress-bar {
+    position: absolute;
+    bottom: 0; left: 0;
+    height: 3px;
+    background: linear-gradient(90deg, var(--orange), var(--amber));
+    transition: width 0.3s ease;
+    z-index: 10000;
+  }
+
+  /* 슬라이드 번호 */
+  .slide-num {
+    position: absolute;
+    bottom: 14px; right: 20px;
+    font-size: 11px;
+    color: var(--ink-dimmer);
+    letter-spacing: 0.08em;
+    z-index: 100;
+    font-variant-numeric: tabular-nums;
+  }
+
+  /* ── 타이포 ── */
+  .eyebrow {
+    font-size: 18px;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--ink-dimmer);
+    margin-bottom: 14px;
+    font-weight: 600;
+  }
+
+  h1 {
+    font-size: clamp(44px, 6vw, 80px);
+    font-weight: 800;
+    line-height: 1.08;
+    letter-spacing: -0.03em;
+    color: var(--ink);
+  }
+  h2 {
+    font-size: clamp(34px, 4.4vw, 64px);
+    font-weight: 800;
+    line-height: 1.1;
+    letter-spacing: -0.03em;
+    color: var(--ink);
+  }
+  h3 {
+    font-size: clamp(18px, 2.1vw, 28px);
+    font-weight: 600;
+    line-height: 1.3;
+    letter-spacing: -0.01em;
+    color: var(--ink);
+  }
+
+  .lead {
+    font-size: clamp(18px, 1.95vw, 25px);
+    color: var(--ink-dim);
+    line-height: 1.75;
+    margin-top: 16px;
+  }
+
+  .highlight { color: var(--orange); }
+  .em    { color: var(--orange); font-weight: 600; }
+  .dim   { color: var(--ink-dim); }
+  .dimmer{ color: var(--ink-dimmer); }
+
+  /* ── 구분선 ── */
+  .rule {
+    width: 36px; height: 2px;
+    background: linear-gradient(90deg, var(--orange), var(--amber));
+    border-radius: 99px;
+    margin: 16px auto;
+  }
+
+  /* ── 카드 ── */
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 22px 26px;
+  }
+  .card-title {
+    font-size: 12px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--ink-dimmer);
+    margin-bottom: 12px;
+    font-weight: 700;
+  }
+  .card p {
+    font-size: clamp(15px, 1.55vw, 18px);
+    color: var(--ink-dim);
+    line-height: 1.75;
+  }
+  .card h3 { margin-bottom: 10px; }
+
+  /* ── 핵심 한 줄 강조 박스 ── */
+  .key-line {
+    background: var(--orange-bg);
+    border: 2px solid var(--orange-br);
+    border-left: 6px solid var(--orange);
+    border-radius: 10px;
+    padding: 20px 24px;
+    font-size: clamp(17px, 1.9vw, 24px);
+    font-weight: 800;
+    color: var(--ink);
+    line-height: 1.5;
+    margin-top: 18px;
+  }
+
+  /* ── 리스트 ── */
+  .list {
+    list-style: none;
+    width: 100%;
+    text-align: left;
+  }
+  .list li {
+    font-size: clamp(15px, 1.65vw, 21px);
+    line-height: 1.6;
+    padding: 13px 0;
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    align-items: flex-start;
+    gap: 14px;
+    color: var(--ink);
+  }
+  .list li:last-child { border-bottom: none; }
+  .list li .dot {
+    width: 7px; height: 7px;
+    border-radius: 50%;
+    background: var(--ink-dimmer);
+    flex-shrink: 0;
+    margin-top: 10px;
+  }
+  .list li .dot.red { background: var(--red); }
+  .list li > *:not(.dot) { flex: 1; min-width: 0; }
+
+  /* ── 그리드 ── */
+  .cols-2 {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+    width: 100%;
+  }
+  .cols-3 {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 16px;
+    width: 100%;
+  }
+
+  /* ── 두 컬럼 레이아웃 ── */
+  .two-col {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 40px;
+    width: 100%;
+    max-width: 1120px;
+    align-items: center;
+    margin: 0 auto;
+    justify-items: center;
+  }
+  .two-col.center { align-items: center; }
+  .left { text-align: left; }
+  .left h2  { text-align: left; }
+  .left .lead { text-align: left; }
+
+  /* ── 배지 ── */
+  .badge {
+    display: inline-flex;
+    align-items: center;
+    font-size: 10px;
+    padding: 4px 10px;
+    border-radius: 99px;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+  }
+  .b-now  { background: #dcfce7; border: 1px solid #bbf7d0; color: var(--green); }
+  .b-soon { background: var(--orange-bg); border: 1px solid var(--orange-br); color: var(--orange); }
+
+  /* ── 애니메이션 ── */
+  .slide.active .anim { animation: fadeUp 0.4s ease both; }
+  .slide.active .anim:nth-child(1) { animation-delay: 0.04s; }
+  .slide.active .anim:nth-child(2) { animation-delay: 0.10s; }
+  .slide.active .anim:nth-child(3) { animation-delay: 0.16s; }
+  .slide.active .anim:nth-child(4) { animation-delay: 0.22s; }
+  .slide.active .anim:nth-child(5) { animation-delay: 0.28s; }
+  .slide.active .anim:nth-child(6) { animation-delay: 0.34s; }
+  .slide.active .anim:nth-child(7) { animation-delay: 0.40s; }
+  .slide.active .anim:nth-child(8) { animation-delay: 0.46s; }
+
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(10px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  /* ── 팁 슬라이드 번호 뱃지 ── */
+  .tip-badge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 72px; height: 72px;
+    border-radius: 50%;
+    background: var(--orange);
+    color: #fff;
+    font-size: 32px;
+    font-weight: 800;
+    flex-shrink: 0;
+    box-shadow: 0 6px 20px rgba(201,101,0,0.35);
+  }
+
+  /* ── 플로우 바 ── */
+  .flow { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; justify-content: center; }
+  .fi {
+    font-size: clamp(11px, 1.1vw, 13px); padding: 7px 13px;
+    border: 1px solid var(--border2); border-radius: 6px;
+    background: var(--surface); white-space: nowrap; color: var(--ink-dim);
+  }
+  .fi.on {
+    border-color: var(--orange-br); color: var(--orange);
+    background: var(--orange-bg); font-weight: 600;
+  }
+  .fa { color: var(--ink-dimmer); font-size: 12px; flex-shrink: 0; }
+
+  /* ── 이미지 플레이스홀더 ── */
+  .img-placeholder {
+    border: 2px dashed var(--border2);
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--ink-dimmer);
+    font-size: 13px;
+    font-weight: 600;
+    letter-spacing: 0.06em;
+    min-height: 140px;
+    background: var(--surface2);
+  }
+
+  /* ── 스크립트 힌트 오버레이 ── */
+  .script-overlay {
+    position: absolute;
+    bottom: 0; left: 0; right: 0;
+    background: rgba(20, 18, 14, 0.90);
+    color: #f0ede6;
+    font-size: clamp(11px, 1.25vw, 14px);
+    line-height: 1.7;
+    padding: 14px 40px 22px;
+    z-index: 10001;
+    display: none;
+    border-top: 2px solid var(--orange);
+    backdrop-filter: blur(6px);
+  }
+  .script-overlay.visible { display: block; }
+  .script-overlay .s-label {
+    font-size: 10px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--orange);
+    font-weight: 700;
+    margin-bottom: 6px;
+  }
+
+  /* ── 대비 컴포넌트 ── */
+  .vs-wrap {
+    display: grid;
+    grid-template-columns: 1fr auto 1fr;
+    gap: 20px;
+    width: 100%;
+    align-items: center;
+  }
+  .vs-label {
+    text-align: center;
+    font-size: clamp(11px, 1.1vw, 13px);
+    font-weight: 700;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    padding: 6px 0 14px;
+  }
+  .vs-divider {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 44px; height: 44px;
+    border-radius: 50%;
+    background: var(--surface2);
+    border: 1px solid var(--border2);
+    font-size: 12px;
+    font-weight: 800;
+    color: var(--ink-dimmer);
+    flex-shrink: 0;
+  }
+
+  /* ── 분할 레이아웃 (S03/S07/S10) ── */
+  .split-layout {
+    position: absolute; inset: 0;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+  }
+  .split-panel {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding: 52px 64px;
+  }
+  .split-panel.left-bg {
+    background: var(--surface2);
+    border-right: 1px solid var(--border);
+  }
+  .split-panel.right-cards {
+    gap: 18px;
+  }
+
+  /* ── 스페이스 이븐 래퍼 (S02/S04/S06/S08/S09/S11) ── */
+  .evenly-wrap {
+    position: absolute; inset: 0;
+    display: flex;
+    align-items: stretch;
+    justify-content: center;
+    padding: 0 80px;
+  }
+  .evenly-inner {
+    width: 100%;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-evenly;
+    padding: 28px 0;
+  }
+
+  /* ── 카드 변형 ── */
+  .card.accent-orange {
+    border-left: 4px solid var(--orange);
+    background: var(--surface);
+  }
+  .card.accent-red {
+    background: #fff5f5;
+    border-color: #fecaca;
+  }
+  .card.stretch {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+  }
+
+  /* ── 레이블 (uppercase small) ── */
+  .label-sm {
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--ink-dimmer);
+    margin-bottom: 14px;
+  }
+  .label-sm.orange { color: var(--orange); }
+
+  /* ── 반응형 ── */
+  @media (max-width: 900px) {
+    .two-col { grid-template-columns: 1fr; gap: 24px; }
+    .slide { padding: 36px 40px; }
+    .cols-3 { grid-template-columns: 1fr 1fr; }
+    .vs-wrap { grid-template-columns: 1fr; gap: 12px; }
+  }
+  @media (max-width: 600px) {
+    .slide { padding: 24px 24px; }
+    .cols-3 { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+
+<div class="deck" id="deck">
+
+<!-- ══════════════════════════════════════════════
+  S01 — 표지
+══════════════════════════════════════════════ -->
+<div class="slide active" id="s01"
+  data-script="[오프닝] 반갑다고 인사 → AI가 일하는 방식을 어떻게 바꾸는지 실제 보여드릴게요 → 무거운 강의보다 같이 생각해보는 자리"
+  style="align-items:center;padding-bottom:24px;">
+  <svg style="position:absolute;inset:0;width:100%;height:100%;pointer-events:none;opacity:0.06;" viewBox="0 0 1200 700" preserveAspectRatio="xMidYMid slice">
+    <circle cx="980" cy="120" r="340" fill="none" stroke="#c96500" stroke-width="2"/>
+    <circle cx="980" cy="120" r="240" fill="none" stroke="#c96500" stroke-width="1.5"/>
+    <circle cx="980" cy="120" r="140" fill="none" stroke="#c96500" stroke-width="1"/>
+    <circle cx="180" cy="600" r="200" fill="none" stroke="#c96500" stroke-width="1.5"/>
+    <circle cx="180" cy="600" r="100" fill="none" stroke="#c96500" stroke-width="1"/>
+  </svg>
+  <div style="text-align:center;max-width:900px;position:relative;">
+    <div class="eyebrow anim">IT 실무자를 위한 특강 · 2026</div>
+    <h1 class="anim" style="font-size:clamp(48px,6.5vw,88px);">AI로 일하는<br><span class="highlight">IT 실무자의</span><br>다음 시대</h1>
+    <p class="lead anim" style="text-align:center;max-width:620px;margin:24px auto 0;font-size:clamp(18px,2vw,26px);">
+      도구가 바뀌고 있어요. 역할도 바뀌고 있고요.<br>
+      오늘은 그 변화의 실제를 같이 살펴볼게요.
+    </p>
+    <div class="anim" style="margin-top:36px;display:inline-flex;align-items:center;gap:12px;padding:12px 24px;border-radius:99px;border:1px solid var(--border2);background:var(--surface);">
+      <div style="width:36px;height:36px;border-radius:50%;background:linear-gradient(135deg,var(--orange),var(--amber));display:flex;align-items:center;justify-content:center;font-size:15px;font-weight:700;color:#fff;">이</div>
+      <div style="text-align:left;">
+        <div style="font-size:14px;font-weight:600;color:var(--ink);">이지훈</div>
+        <div style="font-size:12px;color:var(--ink-dimmer);">프로덕트 디자이너</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════
+  S02 — 상상 유도: 15년차 면접관
+══════════════════════════════════════════════ -->
+<div class="slide" id="s02"
+  data-script="[상상 유도] 15년차 면접관 → 지원자: 똑똑하고 인상 좋음 → 손드는 인터랙션 유도 가능 → 속으로 합격 확정"
+  style="padding:0;">
+  <svg style="position:absolute;inset:0;width:100%;height:100%;pointer-events:none;opacity:0.04;" viewBox="0 0 1200 700" preserveAspectRatio="xMidYMid slice">
+    <circle cx="200" cy="200" r="260" fill="none" stroke="#c96500" stroke-width="2" stroke-dasharray="12 8"/>
+    <circle cx="1000" cy="500" r="200" fill="none" stroke="#c96500" stroke-width="1.5" stroke-dasharray="8 6"/>
+  </svg>
+  <div class="evenly-wrap">
+    <div class="evenly-inner" style="max-width:860px;">
+      <div>
+        <div class="eyebrow anim">상상해 보세요</div>
+        <h2 class="anim" style="font-size:clamp(42px,5.8vw,80px);line-height:1.05;margin-top:12px;">
+          당신은 <span class="highlight">15년차</span><br>
+          면접관이에요
+        </h2>
+      </div>
+      <div class="rule anim" style="margin:0 auto;"></div>
+      <p class="lead anim" style="text-align:center;max-width:680px;margin:0 auto;font-size:clamp(20px,2.2vw,27px);line-height:1.75;">
+        지원자가 앞에 앉아 있어요.<br>
+        똑똑하고, 인상도 서글서글해요.<br>
+        <span class="em">속으로는 이미 합격이에요.</span>
+      </p>
+      <div class="anim" style="display:inline-flex;align-items:center;gap:16px;padding:22px 36px;border-radius:16px;background:var(--surface);border:1px solid var(--border2);margin:0 auto;">
+        <div style="font-size:34px;">😊</div>
+        <div style="text-align:left;">
+          <div style="font-size:clamp(16px,1.7vw,20px);font-weight:700;color:var(--ink);">인상 좋고, 대답도 막힘 없고</div>
+          <div style="font-size:clamp(13px,1.4vw,16px);color:var(--ink-dimmer);margin-top:6px;">포트폴리오도 나쁘지 않아요</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════
+  S03 — 반전: "포토샵으로 만들었어요"
+══════════════════════════════════════════════ -->
+<div class="slide" id="s03"
+  data-script="[반전] 포트폴리오 뭐로 만들었냐 → 포토샵. 전체를 → 피그마 한 번도 안 써봤음 → 잠깐 pause, '뽑으시겠어요?' 청중에게 맡기기"
+  style="padding:0;overflow:hidden;">
+  <!-- 좌측 패널 -->
+  <div style="position:absolute;inset:0;display:grid;grid-template-columns:1fr 1fr;">
+    <div style="background:var(--surface2);border-right:1px solid var(--border);padding:60px 64px;display:flex;flex-direction:column;justify-content:center;">
+      <div class="eyebrow anim">그런데</div>
+      <h2 class="anim" style="font-size:clamp(40px,5.5vw,76px);line-height:1.08;margin-bottom:28px;">
+        "포트폴리오<br>
+        <span class="highlight">포토샵으로</span><br>
+        만들었어요"
+      </h2>
+      <p class="lead anim" style="font-size:clamp(17px,1.9vw,24px);line-height:1.8;color:var(--ink-dim);">
+        피그마를 써본 적이 없다고 해요.
+      </p>
+      <p class="lead anim" style="font-size:clamp(17px,1.9vw,24px);line-height:1.8;margin-top:4px;font-weight:700;color:var(--ink);">
+        전체를요. 처음부터 끝까지.
+      </p>
+    </div>
+    <!-- 우측 패널 -->
+    <div style="padding:48px 56px;display:flex;flex-direction:column;gap:18px;">
+      <div class="anim" style="flex:1;border-radius:18px;background:var(--surface);border:2px solid var(--border2);padding:40px 44px;display:flex;flex-direction:column;justify-content:center;min-height:0;">
+        <div style="font-size:clamp(12px,1.2vw,14px);color:var(--ink-dimmer);margin-bottom:16px;font-weight:700;letter-spacing:0.14em;text-transform:uppercase;">면접관 머릿속</div>
+        <div style="font-size:clamp(28px,3.5vw,48px);font-weight:800;color:var(--ink);line-height:1.3;">
+          "피그마를…<br>안 써봤다고?"
+        </div>
+      </div>
+      <div class="key-line anim" style="font-size:clamp(24px,2.9vw,38px);text-align:center;padding:26px 24px;flex-shrink:0;">
+        뽑으시겠어요?
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════
+  S04 — 예상 반전: 더 강한 주장
+══════════════════════════════════════════════ -->
+<div class="slide" id="s04"
+  data-script="[예상 반전] '피그마처럼 핵심 도구 못 쓰면 도태' → 아니요. 5년 안에 AI 못 쓰면 '디자인 자체 안 해본 수준'의 결격사유가 돼요 → 강하게 끊고 pause"
+  style="padding:0;">
+  <svg style="position:absolute;inset:0;width:100%;height:100%;pointer-events:none;opacity:0.05;" viewBox="0 0 1200 700" preserveAspectRatio="xMidYMid slice">
+    <circle cx="600" cy="350" r="420" fill="none" stroke="#c96500" stroke-width="1.5" stroke-dasharray="14 8"/>
+  </svg>
+  <div style="position:absolute;inset:0;display:flex;align-items:stretch;justify-content:center;padding:0 80px;">
+  <div style="max-width:960px;width:100%;text-align:center;display:flex;flex-direction:column;justify-content:space-evenly;padding:28px 0;">
+    <div class="anim" style="display:inline-flex;align-items:center;justify-content:center;">
+      <div style="display:inline-flex;align-items:center;gap:8px;padding:8px 20px;border-radius:99px;background:var(--surface2);border:1px solid var(--border2);">
+        <span style="font-size:13px;color:var(--ink-dimmer);font-weight:700;letter-spacing:0.14em;text-transform:uppercase;">여러분이 예상하는 결론</span>
+      </div>
+    </div>
+    <div class="anim" style="padding:24px 40px;border-radius:18px;background:var(--surface2);border:1px solid var(--border);">
+      <p style="font-size:clamp(18px,2vw,26px);color:var(--ink-dim);line-height:1.7;">
+        "AI = 피그마처럼 핵심 도구가 될 거니까<br>
+        못 쓰면 도태된다는 이야기겠지"
+      </p>
+    </div>
+    <div class="anim" style="display:flex;align-items:center;justify-content:center;gap:20px;">
+      <div style="flex:1;height:2px;background:var(--border2);border-radius:99px;"></div>
+      <div style="font-size:clamp(28px,4vw,52px);font-weight:900;color:var(--ink-dimmer);line-height:1;white-space:nowrap;">근데 아니에요</div>
+      <div style="flex:1;height:2px;background:var(--border2);border-radius:99px;"></div>
+    </div>
+    <div class="key-line anim" style="font-size:clamp(18px,2.2vw,30px);text-align:center;line-height:1.7;padding:24px 36px;">
+      5년 안에 AI를 못 쓰는 건<br>
+      <span style="color:var(--orange);">피그마를 안 써본 수준</span>이 아니에요.<br>
+      <span style="font-weight:700;color:var(--red);">디자인 자체를 해본 적 없는 수준의 결격사유</span>가 돼요.
+    </div>
+    <p class="anim" style="font-size:12px;color:var(--ink-dimmer);letter-spacing:0.06em;opacity:0.6;">* 개인적인 견해예요</p>
+  </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════
+  S05 — 차이의 본질: 도구 vs 사고체계
+══════════════════════════════════════════════ -->
+<div class="slide" id="s05"
+  data-script="[차이의 본질] 피그마는 똑똑하면 금방 익혀요 → AI는 달라요. 사고방식 자체가 바뀌어야 해요 → 이게 '단순 도구'와 다른 이유예요"
+  style="padding:0;">
+  <div style="position:absolute;inset:0;display:flex;align-items:stretch;justify-content:center;padding:0 80px;">
+    <div style="max-width:1100px;width:100%;display:flex;flex-direction:column;justify-content:space-evenly;padding:28px 0;">
+      <div style="text-align:center;">
+        <div class="eyebrow anim">차이의 본질</div>
+        <h2 class="anim" style="font-size:clamp(32px,4.2vw,58px);text-align:center;margin-top:10px;">
+          왜 <span class="highlight">단순 도구</span>와 다른가요?
+        </h2>
+      </div>
+      <div class="vs-wrap anim" style="align-items:stretch;">
+        <div style="display:flex;flex-direction:column;">
+          <div class="vs-label" style="color:var(--ink-dimmer);">피그마 같은 도구</div>
+          <div class="card" style="flex:1;padding:28px 32px;">
+            <div class="card-title" style="font-size:clamp(13px,1.4vw,16px);">학습 방식</div>
+            <p style="color:var(--ink-dim);font-size:clamp(15px,1.6vw,20px);line-height:1.75;margin-top:12px;margin-bottom:18px;">똑똑한 사람은 금방 배울 수 있어요.<br>익숙한 도구로도 결과물을 냈다는 게 이미 증거예요.</p>
+            <div style="display:flex;flex-wrap:wrap;gap:6px;">
+              <span style="font-size:12px;padding:6px 14px;border-radius:6px;background:var(--surface2);border:1px solid var(--border);color:var(--ink-dim);">기존 사고방식 유지</span>
+            </div>
+          </div>
+        </div>
+        <div class="vs-divider anim">VS</div>
+        <div style="display:flex;flex-direction:column;">
+          <div class="vs-label" style="color:var(--orange);font-weight:700;">AI 업무 활용</div>
+          <div class="card" style="flex:1;background:var(--surface);border-color:var(--border);border-left:4px solid var(--orange);padding:28px 32px;">
+            <div class="card-title" style="color:var(--orange);font-size:clamp(13px,1.4vw,16px);">학습 방식</div>
+            <p style="color:var(--ink-dim);font-size:clamp(15px,1.6vw,20px);line-height:1.75;margin-top:12px;margin-bottom:18px;">사고방식 자체가 바뀌어야 해요.<br>에너지도, 시간도 훨씬 더 써요.</p>
+            <div style="display:flex;flex-wrap:wrap;gap:6px;">
+              <span style="font-size:12px;padding:6px 14px;border-radius:6px;background:var(--orange-bg);border:1px solid var(--orange-br);color:var(--orange);font-weight:600;">사고방식 전환 필요</span>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="key-line anim" style="text-align:center;font-size:clamp(17px,1.9vw,24px);padding:22px 32px;">
+        도구는 안 바뀌어도 되지만,<br>생각하는 방식은 <span style="color:var(--orange);">반드시</span> 바뀌어야 해요.
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════
+  S06 — 재프레이밍: AI는 스킬
+══════════════════════════════════════════════ -->
+<div class="slide" id="s06"
+  data-script="[관점 전환] AI = 툴이 아니라 스킬 → 디자인 관점과 같은 레벨 → '이렇게 보면 오늘 제 말이 더 잘 와닿을 거예요'"
+  style="padding:0;">
+  <svg style="position:absolute;inset:0;width:100%;height:100%;pointer-events:none;opacity:0.05;" viewBox="0 0 1200 700" preserveAspectRatio="xMidYMid slice">
+    <circle cx="600" cy="350" r="300" fill="none" stroke="#c96500" stroke-width="2"/>
+    <circle cx="600" cy="350" r="180" fill="none" stroke="#c96500" stroke-width="1.5"/>
+  </svg>
+  <div style="position:absolute;inset:0;display:flex;align-items:stretch;justify-content:center;padding:0 80px;">
+  <div style="max-width:900px;width:100%;text-align:center;position:relative;display:flex;flex-direction:column;justify-content:space-evenly;padding:28px 0;">
+    <div>
+      <div class="eyebrow anim">관점 전환</div>
+      <h2 class="anim" style="font-size:clamp(38px,5.2vw,72px);line-height:1.05;margin-top:10px;">
+        AI는 <span class="highlight">툴</span>이 아니에요
+      </h2>
+    </div>
+    <div class="anim" style="display:grid;grid-template-columns:1fr auto 1fr;gap:20px;align-items:stretch;">
+      <div style="padding:32px 36px;border-radius:16px;background:var(--surface);border:1px solid var(--border);display:flex;flex-direction:column;justify-content:center;gap:12px;">
+        <div style="font-size:12px;font-weight:700;letter-spacing:0.14em;text-transform:uppercase;color:var(--ink-dimmer);">프디의 전문성</div>
+        <div style="font-size:clamp(22px,2.8vw,36px);font-weight:800;color:var(--ink);">디자인 관점</div>
+        <div style="font-size:clamp(14px,1.5vw,18px);color:var(--ink-dimmer);line-height:1.6;">사용자를 읽는 눈,<br>구조를 잡는 감각</div>
+      </div>
+      <div style="font-size:clamp(20px,2.4vw,30px);font-weight:900;color:var(--ink-dimmer);display:flex;align-items:center;">=</div>
+      <div style="padding:32px 36px;border-radius:16px;background:var(--surface);border:1px solid var(--border);border-left:4px solid var(--orange);display:flex;flex-direction:column;justify-content:center;gap:12px;">
+        <div style="font-size:12px;font-weight:700;letter-spacing:0.14em;text-transform:uppercase;color:var(--orange);">같은 레벨</div>
+        <div style="font-size:clamp(22px,2.8vw,36px);font-weight:800;color:var(--ink);">AI 활용 스킬</div>
+        <div style="font-size:clamp(14px,1.5vw,18px);color:var(--ink-dim);line-height:1.6;">AI한테 뭘 시킬지 알고,<br>결과를 다음 단계로 이어붙이는 능력</div>
+      </div>
+    </div>
+    <div class="key-line anim" style="font-size:clamp(18px,2.1vw,26px);text-align:center;padding:22px 28px;">
+      AI를 스킬로 보면,<br>
+      제가 오늘 하려는 말이 더 잘 와닿을 거예요.
+    </div>
+  </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════
+  S07 — 솔직한 고백: 어려운 이유
+══════════════════════════════════════════════ -->
+<div class="slide" id="s07"
+  data-script="[솔직한 고백] 초반엔 기존 워크플로우가 훨씬 빨라요 → 새 워크플로우 적응 중엔 느림 → 업무 외 시간 투자 불가피 → '그래서 어렵다'고 인정하는 것이 신뢰의 시작"
+  style="padding:0;overflow:hidden;">
+  <div style="position:absolute;inset:0;display:grid;grid-template-columns:1fr 1fr;">
+    <!-- 좌측 패널 -->
+    <div style="background:var(--surface2);border-right:1px solid var(--border);padding:56px 64px;display:flex;flex-direction:column;justify-content:center;">
+      <div class="eyebrow anim">솔직하게 말하면</div>
+      <h2 class="anim" style="font-size:clamp(38px,5vw,68px);line-height:1.1;margin-bottom:24px;">
+        어려운 게<br>
+        <span class="highlight">맞아요</span>
+      </h2>
+      <p class="lead anim" style="font-size:clamp(17px,1.9vw,23px);line-height:1.75;color:var(--ink-dim);">
+        초반엔 기존 워크플로우가<br>
+        훨씬 빨라요. 솔직히.
+      </p>
+      <div class="anim" style="margin-top:28px;background:var(--surface);border:1px solid var(--border);border-left:4px solid var(--ink-dimmer);border-radius:12px;padding:24px 28px;font-size:clamp(16px,1.9vw,22px);font-weight:800;color:var(--ink);line-height:1.6;">
+        결국 업무 외 시간을<br>
+        투자할 수밖에 없어요.<br>
+        <span style="font-weight:500;font-size:0.85em;color:var(--ink-dim);">그래서 어려운 거예요.</span>
+      </div>
+    </div>
+    <!-- 우측 패널 -->
+    <div style="padding:48px 56px;display:flex;flex-direction:column;gap:18px;">
+      <div class="card anim" style="flex:1;padding:28px 32px;display:flex;flex-direction:column;justify-content:center;min-height:0;">
+        <div class="card-title" style="font-size:clamp(13px,1.4vw,16px);">초반의 현실</div>
+        <p style="font-size:clamp(16px,1.7vw,21px);line-height:1.75;margin-top:10px;">새 워크플로우 적응 중엔 속도가 느려요. 이건 자연스러운 거예요.</p>
+      </div>
+      <div class="card anim" style="flex:1;background:#fff5f5;border-color:#fecaca;padding:28px 32px;display:flex;flex-direction:column;justify-content:center;min-height:0;">
+        <div class="card-title" style="color:var(--red);font-size:clamp(13px,1.4vw,16px);">넘기 어려운 이유</div>
+        <p style="font-size:clamp(16px,1.7vw,21px);line-height:1.75;margin-top:10px;">동기부여가 없으면 초반 허들에서 멈춰요. 당장 결과가 안 보이니까요.</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════
+  S08 — 반전 브릿지: "근데 그냥 어렵다고 할거면"
+══════════════════════════════════════════════ -->
+<div class="slide" id="s08"
+  data-script="[반전 브릿지] 안 만들었겠죠? → 수백 시간 맨땅 → 인사이트+스타터킷 → 👏 박수"
+  style="padding:0;">
+  <svg style="position:absolute;inset:0;width:100%;height:100%;pointer-events:none;opacity:0.06;" viewBox="0 0 1200 700" preserveAspectRatio="xMidYMid slice">
+    <circle cx="600" cy="350" r="360" fill="none" stroke="#c96500" stroke-width="2.5" stroke-dasharray="10 7"/>
+    <circle cx="600" cy="350" r="220" fill="none" stroke="#c96500" stroke-width="1.5"/>
+    <circle cx="600" cy="350" r="110" fill="none" stroke="#c96500" stroke-width="1"/>
+  </svg>
+  <div style="position:absolute;inset:0;display:flex;align-items:stretch;justify-content:center;padding:0 80px;">
+  <div style="max-width:860px;width:100%;text-align:center;position:relative;display:flex;flex-direction:column;justify-content:space-evenly;padding:28px 0;">
+    <div>
+      <h2 class="anim" style="font-size:clamp(36px,5.2vw,72px);line-height:1.05;color:var(--ink-dimmer);">
+        근데 그냥 어렵다고 할 거면
+      </h2>
+      <h2 class="anim" style="font-size:clamp(36px,5.2vw,72px);line-height:1.05;margin-top:6px;">
+        이 자리를 <span class="highlight">안 만들었겠죠?</span>
+      </h2>
+    </div>
+    <div class="rule anim" style="margin:0 auto;"></div>
+    <div class="anim" style="display:grid;grid-template-columns:repeat(3,1fr);gap:18px;">
+      <div style="padding:28px 24px;border-radius:16px;background:var(--surface);border:1px solid var(--border);text-align:center;">
+        <div style="font-size:clamp(26px,3.4vw,46px);font-weight:800;color:var(--ink);">수백 시간</div>
+        <div style="font-size:clamp(13px,1.4vw,16px);color:var(--ink-dimmer);margin-top:8px;line-height:1.5;">맨땅에 해딩</div>
+      </div>
+      <div style="padding:28px 24px;border-radius:16px;background:var(--surface);border:1px solid var(--border);text-align:center;">
+        <div style="font-size:clamp(26px,3.4vw,46px);font-weight:800;color:var(--ink-dim);">인사이트</div>
+        <div style="font-size:clamp(13px,1.4vw,16px);color:var(--ink-dimmer);margin-top:8px;line-height:1.5;">직접 겪어서 얻은 것들</div>
+      </div>
+      <div style="padding:28px 24px;border-radius:16px;background:var(--orange-bg);border:2px solid var(--orange-br);text-align:center;">
+        <div style="font-size:clamp(26px,3.4vw,46px);font-weight:800;color:var(--orange);">스타터킷</div>
+        <div style="font-size:clamp(13px,1.4vw,16px);color:var(--ink-dim);margin-top:8px;line-height:1.5;">오늘 바로 쓸 수 있는 것</div>
+      </div>
+    </div>
+    <div class="key-line anim" style="font-size:clamp(20px,2.4vw,30px);text-align:center;padding:24px 28px;">
+      👏 박수 한 번 주시죠
+    </div>
+    <a href="https://drive.google.com/file/d/189mZArej3N_oUEl-fBJAHMf7WllbBbQU/view?usp=sharing" target="_blank" rel="noopener" class="anim"
+      style="display:inline-flex;align-items:center;gap:10px;margin:0 auto;padding:14px 28px;border-radius:12px;background:var(--orange);color:#fff;font-size:clamp(14px,1.5vw,18px);font-weight:700;text-decoration:none;letter-spacing:-0.01em;box-shadow:0 4px 16px rgba(201,101,0,0.30);transition:opacity 0.15s;">
+      <span>⬇</span> 스타터킷 다운로드
+    </a>
+  </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════
+  S09 — 선언: 왜, 언제, 뭘
+══════════════════════════════════════════════ -->
+<div class="slide" id="s09"
+  data-script="[선언] '어떻게'는 AI가 해요 → 우리가 다뤄야 할 건 왜·언제·뭘 → 3개 카드 순서대로 짚기: 어떻게(AI) / 왜(우리) / 언제·뭘(판단)"
+  style="padding:0;">
+  <svg style="position:absolute;inset:0;width:100%;height:100%;pointer-events:none;opacity:0.05;" viewBox="0 0 1200 700" preserveAspectRatio="xMidYMid slice">
+    <circle cx="100" cy="600" r="250" fill="none" stroke="#c96500" stroke-width="2"/>
+    <circle cx="1100" cy="100" r="200" fill="none" stroke="#c96500" stroke-width="1.5"/>
+  </svg>
+  <div style="position:absolute;inset:0;display:flex;align-items:stretch;justify-content:center;padding:0 80px;">
+  <div style="max-width:900px;width:100%;text-align:center;position:relative;display:flex;flex-direction:column;justify-content:space-evenly;padding:28px 0;">
+    <div>
+      <div class="eyebrow anim">오늘의 방향</div>
+      <h1 class="anim" style="font-size:clamp(48px,6.2vw,86px);line-height:1.0;margin-top:10px;">
+        <span class="highlight">왜, 언제, 뭘</span>
+      </h1>
+    </div>
+    <p class="lead anim" style="text-align:center;font-size:clamp(19px,2.1vw,26px);max-width:640px;margin:0 auto;line-height:1.75;">
+      앞으로는 <span class="em">"어떻게"</span>가 아니라<br>
+      <span class="em">"왜, 언제, 뭘"</span>만 다루게 될 거예요.
+    </p>
+    <div class="anim" style="display:grid;grid-template-columns:repeat(3,1fr);gap:18px;">
+      <div style="padding:36px 24px;border-radius:16px;background:var(--surface2);border:1px solid var(--border);">
+        <div style="font-size:clamp(30px,3.6vw,50px);font-weight:800;color:var(--ink-dimmer);margin-bottom:14px;">어떻게</div>
+        <div style="font-size:clamp(14px,1.5vw,17px);color:var(--ink-dimmer);line-height:1.65;">AI가 알아서 해줘요</div>
+      </div>
+      <div style="padding:36px 24px;border-radius:16px;background:var(--surface);border:1px solid var(--border);">
+        <div style="font-size:clamp(30px,3.6vw,50px);font-weight:800;color:var(--ink-dim);margin-bottom:14px;">왜</div>
+        <div style="font-size:clamp(14px,1.5vw,17px);color:var(--ink-dimmer);line-height:1.65;">우리가 다뤄야 할 것</div>
+      </div>
+      <div style="padding:36px 24px;border-radius:16px;background:var(--orange-bg);border:2px solid var(--orange-br);">
+        <div style="font-size:clamp(30px,3.6vw,50px);font-weight:800;color:var(--orange);margin-bottom:14px;">언제·뭘</div>
+        <div style="font-size:clamp(14px,1.5vw,17px);color:var(--ink-dim);line-height:1.65;">판단이 필요한 순간</div>
+      </div>
+    </div>
+  </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════
+  S10 — PM 파트: 문서 정리 시간 다이어트
+══════════════════════════════════════════════ -->
+<div class="slide" id="s10"
+  data-script="[PM 예시] 사람 간 정렬 → 줄일 수 없음 → 문서 정리 시간은 줄일 수 있음 → Confluence 자동 작성이 그 예시"
+  style="padding:0;overflow:hidden;">
+  <div style="position:absolute;inset:0;display:grid;grid-template-columns:1fr 1fr;">
+    <!-- 좌측 패널 -->
+    <div style="background:var(--surface2);border-right:1px solid var(--border);padding:56px 64px;display:flex;flex-direction:column;justify-content:center;">
+      <div class="eyebrow anim">그럼 PM 입장에서 보면요?</div>
+      <h2 class="anim" style="font-size:clamp(32px,4.2vw,58px);line-height:1.15;margin-bottom:22px;">
+        줄일 수 있는 것부터<br>
+        <span class="highlight">먼저 줄여야</span> 해요
+      </h2>
+      <p class="lead anim" style="font-size:clamp(16px,1.8vw,22px);line-height:1.75;color:var(--ink-dim);">
+        사람 간 정렬에 쓰는 시간,<br>
+        이건 줄일 수 없어요.<br>
+        직접 대면이 중요하니까요.
+      </p>
+      <div class="key-line anim" style="margin-top:24px;font-size:clamp(16px,1.8vw,22px);">
+        확실하게 줄일 수 있는 건<br>
+        <span class="highlight">문서 정리 시간</span>이에요.
+      </div>
+    </div>
+    <!-- 우측 패널 -->
+    <div style="padding:44px 52px;display:flex;flex-direction:column;gap:14px;">
+      <div class="card anim" style="flex:1;background:#fff5f5;border-color:#fecaca;padding:26px 30px;display:flex;flex-direction:column;justify-content:center;min-height:0;">
+        <div class="card-title" style="color:var(--red);font-size:clamp(13px,1.4vw,16px);">줄이기 어려운 것</div>
+        <p style="font-size:clamp(15px,1.6vw,20px);line-height:1.75;margin-top:10px;">사람과 사람 사이의 정렬. 100장을 1장으로 줄여도 상대가 안 읽으면 의미 없어요. 직접 대면이 결국 핵심이에요.</p>
+      </div>
+      <div class="card anim" style="flex:1;background:var(--surface);border-left:4px solid var(--orange);padding:26px 30px;display:flex;flex-direction:column;justify-content:center;min-height:0;">
+        <div class="card-title" style="color:var(--orange);font-size:clamp(13px,1.4vw,16px);">확실히 줄일 수 있는 것</div>
+        <p style="font-size:clamp(15px,1.6vw,20px);line-height:1.75;margin-top:10px;">문서 정리 시간. 이건 AI가 도와줄 수 있어요. Confluence 자동 작성이 바로 그 예시예요.</p>
+      </div>
+      <div class="anim" style="padding:14px 20px;border-radius:10px;background:var(--surface2);border:1px solid var(--border);display:flex;align-items:center;gap:14px;flex-shrink:0;">
+        <span style="font-size:20px;">📋</span>
+        <div>
+          <div style="font-size:clamp(13px,1.4vw,16px);font-weight:700;color:var(--ink);">다음에 직접 보여드려요</div>
+          <div style="font-size:clamp(11px,1.1vw,13px);color:var(--ink-dimmer);margin-top:3px;">AI가 Confluence를 직접 작성하는 과정</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════
+  S11 — 시연 진입 브릿지
+══════════════════════════════════════════════ -->
+<div class="slide" id="s11"
+  data-script="[시연 진입] '직접 보여드릴게요' → flow 바 전체 범위 소개: Figma부터 Confluence까지 → 판단이 언제 개입하는지 보세요 → 바로 시연 화면"
+  style="padding:0;">
+  <svg style="position:absolute;inset:0;width:100%;height:100%;pointer-events:none;opacity:0.06;" viewBox="0 0 1200 700" preserveAspectRatio="xMidYMid slice">
+    <circle cx="950" cy="150" r="320" fill="none" stroke="#c96500" stroke-width="2"/>
+    <circle cx="950" cy="150" r="200" fill="none" stroke="#c96500" stroke-width="1.5"/>
+    <circle cx="240" cy="560" r="220" fill="none" stroke="#c96500" stroke-width="1.5" stroke-dasharray="10 7"/>
+  </svg>
+  <div style="position:absolute;inset:0;display:flex;align-items:stretch;justify-content:center;padding:0 80px;">
+  <div style="max-width:860px;width:100%;text-align:center;position:relative;display:flex;flex-direction:column;justify-content:space-evenly;padding:28px 0;">
+    <div>
+      <div class="eyebrow anim">이제 직접 보여드릴게요</div>
+      <h2 class="anim" style="font-size:clamp(42px,5.8vw,80px);line-height:1.0;margin-top:12px;">
+        제가 AI로<br>
+        <span class="highlight">뭘 했는지</span> 보여드릴게요
+      </h2>
+    </div>
+    <p class="lead anim" style="text-align:center;font-size:clamp(19px,2.1vw,27px);max-width:620px;margin:0 auto;line-height:1.75;">
+      Figma부터 Confluence까지,<br>
+      <span class="em">판단이 언제 개입하는지</span> 보세요.
+    </p>
+    <div class="anim" style="background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:28px 36px;">
+      <div style="font-size:12px;font-weight:700;letter-spacing:0.14em;text-transform:uppercase;color:var(--ink-dimmer);margin-bottom:20px;">워크플로우 전체 범위</div>
+      <div class="flow" style="gap:8px;">
+        <div class="fi on" style="font-size:clamp(12px,1.3vw,15px);padding:9px 16px;">Figma 디자인</div>
+        <div class="fa" style="font-size:14px;">›</div>
+        <div class="fi" style="font-size:clamp(12px,1.3vw,15px);padding:9px 16px;">코드 변환</div>
+        <div class="fa" style="font-size:14px;">›</div>
+        <div class="fi" style="font-size:clamp(12px,1.3vw,15px);padding:9px 16px;">POC</div>
+        <div class="fa" style="font-size:14px;">›</div>
+        <div class="fi" style="font-size:clamp(12px,1.3vw,15px);padding:9px 16px;">고도화</div>
+        <div class="fa" style="font-size:14px;">›</div>
+        <div class="fi" style="border-color:var(--orange-br);color:var(--orange);font-weight:700;font-size:clamp(12px,1.3vw,15px);padding:9px 16px;">Confluence</div>
+      </div>
+    </div>
+  </div>
+  </div>
+</div>
+
+  <div class="progress-bar" id="progressBar"></div>
+  <div class="slide-num" id="slideNum">1 / 11</div>
+
+  <!-- 스크립트 힌트 오버레이 — deck 내부 absolute -->
+  <div class="script-overlay" id="scriptOverlay">
+    <div class="s-label">SCRIPT HINT — S 키로 토글</div>
+    <div id="scriptText"></div>
+  </div>
+</div><!-- /deck -->
+
+<script>
+  const deck = document.getElementById('deck');
+
+  // 16:9 letterbox 크기 계산
+  function fitDeck() {
+    const vw = window.innerWidth;
+    const vh = window.innerHeight;
+    const ratio = 16 / 9;
+    let w, h;
+    if (vw / vh > ratio) {
+      h = vh; w = h * ratio;
+    } else {
+      w = vw; h = w / ratio;
+    }
+    deck.style.width  = w + 'px';
+    deck.style.height = h + 'px';
+  }
+  fitDeck();
+  let _resizeTimer;
+  window.addEventListener('resize', () => {
+    clearTimeout(_resizeTimer);
+    _resizeTimer = setTimeout(fitDeck, 50);
+  });
+
+  const slides = document.querySelectorAll('.slide');
+  const total = slides.length;
+  let cur = 0;
+  let scriptVisible = false;
+
+  function show(idx) {
+    const next = Math.max(0, Math.min(idx, total - 1));
+    if (next === cur && slides[cur].classList.contains('active')) {
+      // 초기 호출 시 이미 active면 remove 없이 진행
+      document.getElementById('progressBar').style.width = ((cur + 1) / total * 100) + '%';
+      document.getElementById('slideNum').textContent = (cur + 1) + ' / ' + total;
+      if (scriptVisible) updateScriptText();
+      return;
+    }
+    slides[cur].classList.remove('active');
+    cur = next;
+    slides[cur].classList.add('active');
+    document.getElementById('progressBar').style.width = ((cur + 1) / total * 100) + '%';
+    document.getElementById('slideNum').textContent = (cur + 1) + ' / ' + total;
+
+    // 슬라이드 전환 시 스크립트 힌트 텍스트 업데이트
+    if (scriptVisible) updateScriptText();
+  }
+
+  function updateScriptText() {
+    const hint = slides[cur].getAttribute('data-script') || '(스크립트 힌트 없음)';
+    document.getElementById('scriptText').textContent = hint;
+  }
+
+  function toggleScript() {
+    scriptVisible = !scriptVisible;
+    const overlay = document.getElementById('scriptOverlay');
+    if (scriptVisible) {
+      updateScriptText();
+      overlay.classList.add('visible');
+    } else {
+      overlay.classList.remove('visible');
+    }
+  }
+
+  function go(dir) { show(cur + dir); }
+
+  document.addEventListener('keydown', e => {
+    if (e.key === 'ArrowRight' || e.key === 'ArrowDown' || e.key === ' ') go(1);
+    if (e.key === 'ArrowLeft'  || e.key === 'ArrowUp') go(-1);
+    if (e.key === 'Home') show(0);
+    if (e.key === 'End')  show(total - 1);
+    if (e.key === 's' || e.key === 'S') toggleScript();
+  });
+
+  deck.addEventListener('click', e => {
+    const rect = deck.getBoundingClientRect();
+    go(e.clientX - rect.left > rect.width / 2 ? 1 : -1);
+  });
+
+  let tx = 0;
+  document.addEventListener('touchstart', e => { tx = e.touches[0].clientX; });
+  document.addEventListener('touchend', e => {
+    const dx = e.changedTouches[0].clientX - tx;
+    if (Math.abs(dx) > 40) go(dx < 0 ? 1 : -1);
+  });
+
+  show(0);
+</script>
+</body>
+</html>
