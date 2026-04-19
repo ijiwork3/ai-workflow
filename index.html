@@ -357,28 +357,6 @@
     background: var(--surface2);
   }
 
-  /* ── 스크립트 트리거 버튼 ── */
-  .script-trigger {
-    position: absolute;
-    bottom: 10px; right: 56px;
-    width: 28px; height: 28px;
-    border-radius: 50%;
-    background: rgba(201, 101, 0, 0.12);
-    border: 1.5px solid rgba(201, 101, 0, 0.30);
-    color: var(--orange);
-    font-size: 13px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    cursor: pointer;
-    z-index: 10002;
-    transition: background 0.15s, border-color 0.15s, opacity 0.15s;
-    opacity: 0.55;
-    user-select: none;
-  }
-  .script-trigger:hover { opacity: 1; background: rgba(201, 101, 0, 0.18); border-color: var(--orange); }
-  .script-trigger.active { opacity: 1; background: var(--orange); color: #fff; border-color: var(--orange); }
-
   /* ── 스크립트 힌트 오버레이 ── */
   .script-overlay {
     position: absolute;
@@ -1959,12 +1937,9 @@
   <div class="progress-bar" id="progressBar"></div>
   <div class="slide-num" id="slideNum">1 / 30</div>
 
-  <!-- 스크립트 트리거 버튼 — 우측 하단 고정 -->
-  <div class="script-trigger" id="scriptTrigger" title="스크립트 보기 (S)">✦</div>
-
   <!-- 스크립트 힌트 오버레이 — deck 내부 absolute -->
   <div class="script-overlay" id="scriptOverlay">
-    <div class="s-label">SCRIPT — S 키 또는 버튼으로 토글</div>
+    <div class="s-label">SCRIPT HINT — S 키로 토글</div>
     <div id="scriptText"></div>
   </div>
 </div><!-- /deck -->
@@ -2025,14 +2000,11 @@
   function toggleScript() {
     scriptVisible = !scriptVisible;
     const overlay = document.getElementById('scriptOverlay');
-    const trigger = document.getElementById('scriptTrigger');
     if (scriptVisible) {
       updateScriptText();
       overlay.classList.add('visible');
-      trigger.classList.add('active');
     } else {
       overlay.classList.remove('visible');
-      trigger.classList.remove('active');
     }
   }
 
@@ -2046,13 +2018,8 @@
     if (e.key === 's' || e.key === 'S') toggleScript();
   });
 
-  document.getElementById('scriptTrigger').addEventListener('click', e => {
-    e.stopPropagation();
-    toggleScript();
-  });
-
   deck.addEventListener('click', e => {
-    if (e.target.closest('.script-trigger') || e.target.closest('.script-overlay')) return;
+    if (e.target.closest('.script-overlay')) return;
     const rect = deck.getBoundingClientRect();
     go(e.clientX - rect.left > rect.width / 2 ? 1 : -1);
   });
