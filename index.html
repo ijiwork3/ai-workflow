@@ -36,17 +36,19 @@
     overflow: hidden;
     width: 100vw;
     height: 100vh;
-    display: flex;
-    align-items: center;
-    justify-content: center;
   }
 
+  /* 16:9 고정 스테이지 (1280×720). JS로 scale만 변경해서 단순 확대/축소. */
   .deck {
-    position: relative;
-    aspect-ratio: 16 / 9;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 1280px;
+    height: 720px;
+    transform-origin: center center;
+    transform: translate(-50%, -50%) scale(1);
     overflow: hidden;
     background: var(--bg);
-    flex-shrink: 0;
   }
 
   .slide {
@@ -475,17 +477,7 @@
   }
   .label-sm.orange { color: var(--orange); }
 
-  /* ── 반응형 ── */
-  @media (max-width: 900px) {
-    .two-col { grid-template-columns: 1fr; gap: 24px; }
-    .slide { padding: 36px 40px; }
-    .cols-3 { grid-template-columns: 1fr 1fr; }
-    .vs-wrap { grid-template-columns: 1fr; gap: 12px; }
-  }
-  @media (max-width: 600px) {
-    .slide { padding: 24px 24px; }
-    .cols-3 { grid-template-columns: 1fr; }
-  }
+  /* 반응형 없음 — 1920×1080 고정, JS로 scale만 조정 */
 </style>
 </head>
 <body>
@@ -651,6 +643,61 @@
 </div>
 
 <!-- ══════════════════════════════════════════════
+  S04c — 우대사항 → 필수사항 (타임라인)
+══════════════════════════════════════════════ -->
+<div class="slide" id="s04c"
+  data-script="조금 더 구체적으로 말할게요. 지금 채용공고 열어보시면 AI 활용 능력은 '우대사항'에 있어요. 있으면 좋고, 없어도 뽑히는 수준이에요. 근데 5년 안에 이게 '필수사항'으로 올라가요. 피그마가 처음엔 우대였다가 지금은 기본인 것처럼요. 지금 준비 안 하면 5년 뒤엔 이력서 1차 필터에서 떨어져요."
+  style="padding:0;">
+  <div style="position:absolute;inset:0;display:flex;align-items:stretch;justify-content:center;padding:0 80px;">
+    <div style="max-width:1100px;width:100%;display:flex;flex-direction:column;justify-content:space-evenly;padding:28px 0;">
+      <div style="text-align:center;">
+        <div class="eyebrow anim">채용 시장의 변화</div>
+        <h2 class="anim" style="font-size:clamp(32px,4.2vw,58px);line-height:1.1;margin-top:10px;">
+          지금은 <span style="color:var(--ink-dim);">우대사항</span>,<br>
+          5년 뒤엔 <span class="highlight">필수사항</span>이에요
+        </h2>
+      </div>
+      <div class="anim" style="display:grid;grid-template-columns:1fr auto 1fr;gap:24px;align-items:stretch;">
+        <div style="padding:28px 32px;border-radius:16px;background:var(--surface);border:1px solid var(--border);display:flex;flex-direction:column;gap:14px;">
+          <div style="display:flex;align-items:center;gap:10px;">
+            <div style="padding:4px 12px;border-radius:6px;background:var(--surface2);border:1px solid var(--border);font-size:12px;font-weight:700;color:var(--ink-dim);letter-spacing:0.08em;">NOW · 2026</div>
+          </div>
+          <div style="font-size:clamp(20px,2.4vw,30px);font-weight:800;color:var(--ink);">우대사항 (Preferred)</div>
+          <p style="color:var(--ink-dim);font-size:clamp(14px,1.5vw,18px);line-height:1.7;">있으면 좋아요. 없어도 경력·포트폴리오로 커버 가능해요.</p>
+          <div style="padding:14px 18px;border-radius:10px;background:var(--surface2);border:1px dashed var(--border2);font-family:monospace;font-size:13px;color:var(--ink-dim);line-height:1.6;">
+            · AI 툴 활용 경험자<br>
+            · Claude/ChatGPT 업무 활용<br>
+            <span style="opacity:0.5;">(우대)</span>
+          </div>
+        </div>
+        <div style="display:flex;align-items:center;justify-content:center;">
+          <div style="display:flex;flex-direction:column;align-items:center;gap:6px;">
+            <div style="font-size:11px;font-weight:700;letter-spacing:0.16em;color:var(--orange);">5 YEARS</div>
+            <div style="font-size:32px;color:var(--orange);">→</div>
+          </div>
+        </div>
+        <div style="padding:28px 32px;border-radius:16px;background:var(--surface);border:1px solid var(--border);border-left:4px solid var(--orange);display:flex;flex-direction:column;gap:14px;">
+          <div style="display:flex;align-items:center;gap:10px;">
+            <div style="padding:4px 12px;border-radius:6px;background:var(--orange-bg);border:1px solid var(--orange-br);font-size:12px;font-weight:700;color:var(--orange);letter-spacing:0.08em;">2031</div>
+          </div>
+          <div style="font-size:clamp(20px,2.4vw,30px);font-weight:800;color:var(--orange);">필수사항 (Required)</div>
+          <p style="color:var(--ink-dim);font-size:clamp(14px,1.5vw,18px);line-height:1.7;">없으면 서류에서 걸러져요. 포토샵만 써본 10년차처럼요.</p>
+          <div style="padding:14px 18px;border-radius:10px;background:var(--orange-bg);border:1px solid var(--orange-br);font-family:monospace;font-size:13px;color:var(--orange);line-height:1.6;font-weight:600;">
+            · AI 기반 워크플로우 설계 능력<br>
+            · Claude Code / Cursor 실무 활용<br>
+            <span>(필수)</span>
+          </div>
+        </div>
+      </div>
+      <div class="key-line anim" style="text-align:center;font-size:clamp(17px,1.9vw,24px);padding:22px 32px;">
+        피그마도 처음엔 우대였어요.<br>
+        <span style="color:var(--orange);">지금 준비 안 하면, 5년 뒤엔 1차 필터에서 걸러져요.</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════
   S05 — 차이의 본질: 도구 vs 사고체계
 ══════════════════════════════════════════════ -->
 <div class="slide" id="s05"
@@ -675,7 +722,7 @@
             </div>
           </div>
         </div>
-        <div class="vs-divider anim">VS</div>
+        <div class="vs-divider anim" style="align-self:center;">VS</div>
         <div style="display:flex;flex-direction:column;">
           <div class="vs-label" style="color:var(--orange);font-weight:700;">AI 업무 활용</div>
           <div class="card" style="flex:1;background:var(--surface);border-color:var(--border);border-left:4px solid var(--orange);padding:28px 32px;">
@@ -1107,6 +1154,55 @@
         Figma부터 Confluence까지,<br>
         <span class="em">코드 한 줄 안 쓰고</span> 보여드릴게요.
       </p>
+    </div>
+  </div>
+
+  <!-- ── S21b 시작 경로 + Opus 팁 ── -->
+  <div class="slide" id="s21b" data-script="시연 들어가기 전에 실전 팁 하나요. Claude Code는 디자인이 약해요. 그래서 어디서 시작하느냐가 중요해요. 세 가지 경우가 있어요. 첫째, 피그마 자산이 있으면 Figma Make로 코드화해서 가져와요. 둘째, 이미 개발된 레퍼런스가 있으면 개발자분께 코드 받아서 강하게 참고시켜요. 셋째, 맨땅이면 Claude Design으로 시작해요. 그리고 중요한 거 하나 더. 초반 단계, 디자인 톤이나 전체 구조 설계할 때는 반드시 Opus 써야 해요. 아끼겠다고 Sonnet으로 시작하면, 나중에 하나하나 수정하는 데 오히려 토큰이랑 시간이 더 들어요." style="align-items:flex-start;padding:48px 80px;">
+    <div style="max-width:1100px;width:100%;">
+      <div class="eyebrow anim">시연 전, 실전 팁</div>
+      <h2 class="anim" style="font-size:clamp(26px,3.2vw,46px);font-weight:800;letter-spacing:-0.03em;margin-bottom:8px;">
+        <span class="highlight">어디서 시작</span>하느냐로 결과가 갈려요
+      </h2>
+      <p class="lead anim" style="font-size:clamp(14px,1.5vw,18px);margin-bottom:24px;">
+        Claude Code는 디자인이 약해요. 상황에 맞게 시작점을 골라야 합니다.
+      </p>
+      <div class="anim" style="display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-bottom:20px;">
+        <div style="padding:24px 22px;border-radius:14px;background:var(--surface);border:1px solid var(--border);border-top:4px solid var(--orange);display:flex;flex-direction:column;gap:10px;">
+          <div style="display:flex;align-items:center;gap:8px;">
+            <div style="width:28px;height:28px;border-radius:8px;background:var(--orange-bg);border:1px solid var(--orange-br);display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:800;color:var(--orange);">A</div>
+            <div style="font-size:11px;font-weight:700;letter-spacing:0.1em;color:var(--ink-dimmer);">CASE 1</div>
+          </div>
+          <div style="font-size:clamp(16px,1.8vw,22px);font-weight:800;color:var(--ink);">Figma 자산이 있다면</div>
+          <p style="color:var(--ink-dim);font-size:clamp(13px,1.3vw,15px);line-height:1.65;">이미 디자인해둔 화면이 있으면, 그걸 그대로 살려요.</p>
+          <div style="margin-top:auto;padding:10px 14px;border-radius:8px;background:var(--orange-bg);border:1px solid var(--orange-br);font-size:13px;font-weight:700;color:var(--orange);">→ Figma Make로 코드화</div>
+        </div>
+        <div style="padding:24px 22px;border-radius:14px;background:var(--surface);border:1px solid var(--border);border-top:4px solid var(--orange);display:flex;flex-direction:column;gap:10px;">
+          <div style="display:flex;align-items:center;gap:8px;">
+            <div style="width:28px;height:28px;border-radius:8px;background:var(--orange-bg);border:1px solid var(--orange-br);display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:800;color:var(--orange);">B</div>
+            <div style="font-size:11px;font-weight:700;letter-spacing:0.1em;color:var(--ink-dimmer);">CASE 2</div>
+          </div>
+          <div style="font-size:clamp(16px,1.8vw,22px);font-weight:800;color:var(--ink);">개발된 레퍼런스가 있다면</div>
+          <p style="color:var(--ink-dim);font-size:clamp(13px,1.3vw,15px);line-height:1.65;">참고할 수 있는 유사 기능이 이미 배포돼 있으면, 그 코드를 끌어와요.</p>
+          <div style="margin-top:auto;padding:10px 14px;border-radius:8px;background:var(--orange-bg);border:1px solid var(--orange-br);font-size:13px;font-weight:700;color:var(--orange);">→ 개발자에게 코드 요청</div>
+        </div>
+        <div style="padding:24px 22px;border-radius:14px;background:var(--surface);border:1px solid var(--border);border-top:4px solid var(--orange);display:flex;flex-direction:column;gap:10px;">
+          <div style="display:flex;align-items:center;gap:8px;">
+            <div style="width:28px;height:28px;border-radius:8px;background:var(--orange-bg);border:1px solid var(--orange-br);display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:800;color:var(--orange);">C</div>
+            <div style="font-size:11px;font-weight:700;letter-spacing:0.1em;color:var(--ink-dimmer);">CASE 3</div>
+          </div>
+          <div style="font-size:clamp(16px,1.8vw,22px);font-weight:800;color:var(--ink);">맨땅에서 시작한다면</div>
+          <p style="color:var(--ink-dim);font-size:clamp(13px,1.3vw,15px);line-height:1.65;">참고할 자산이 없으면, 디자인에 특화된 도구부터 돌려요.</p>
+          <div style="margin-top:auto;padding:10px 14px;border-radius:8px;background:var(--orange-bg);border:1px solid var(--orange-br);font-size:13px;font-weight:700;color:var(--orange);">→ Claude Design으로 시작</div>
+        </div>
+      </div>
+      <div class="key-line anim" style="padding:20px 28px;display:flex;align-items:center;gap:20px;">
+        <div style="flex-shrink:0;padding:8px 16px;border-radius:8px;background:var(--orange);color:#fff;font-size:13px;font-weight:800;letter-spacing:0.04em;">⚠ 모델 선택</div>
+        <div style="font-size:clamp(15px,1.6vw,20px);line-height:1.6;">
+          초반 단계(<span style="font-weight:700;">디자인 톤·전체 구조 설계</span>)엔 반드시 <span style="color:var(--orange);font-weight:800;">Opus</span>.<br>
+          <span style="color:var(--ink-dim);font-size:0.88em;">아끼겠다고 Sonnet으로 시작하면, 수정에 더 많은 토큰·시간이 들어요.</span>
+        </div>
+      </div>
     </div>
   </div>
 
@@ -1948,18 +2044,10 @@
   const deck = document.getElementById('deck');
 
   // 16:9 letterbox 크기 계산
+  // 1920×1080 고정. transform:scale만 조정해서 단순 확대/축소. 반응형 없음.
   function fitDeck() {
-    const vw = window.innerWidth;
-    const vh = window.innerHeight;
-    const ratio = 16 / 9;
-    let w, h;
-    if (vw / vh > ratio) {
-      h = vh; w = h * ratio;
-    } else {
-      w = vw; h = w / ratio;
-    }
-    deck.style.width  = w + 'px';
-    deck.style.height = h + 'px';
+    const scale = Math.min(window.innerWidth / 1280, window.innerHeight / 720);
+    deck.style.transform = 'translate(-50%, -50%) scale(' + scale + ')';
   }
   fitDeck();
   let _resizeTimer;
